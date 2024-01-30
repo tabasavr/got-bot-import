@@ -27,6 +27,7 @@
             const level = member["level"]
             return `-got bot crew add ${name} -s${stars} -l${level}`
         })
+        dataInput = ""
     }
 
     function copyToClipboard(text: string) {
