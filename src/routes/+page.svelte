@@ -28,6 +28,10 @@
             return `-got bot crew add ${name} -s${stars} -l${level}`
         })
     }
+
+    function copyToClipboard(text: string) {
+        navigator.clipboard.writeText(text)
+    }
 </script>
 
 <h1>GoT bot crew import formatter</h1>
@@ -36,5 +40,5 @@
 <input type="button" on:click={formatCrew} value="Format"/>
 
 {#each formattedCommands as command (command)}
-    <p>{command}</p>
+    <p><button on:click={() => copyToClipboard(command)}>Copy</button> {command}</p>
 {/each}
