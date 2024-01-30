@@ -1,18 +1,6 @@
 # got-bot-import
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
-
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+Formats crew from [DB export](https://app.startrektimelines.com/player?client_api=20&only_read_state=true) into commands understood by bot
 
 ## Developing
 
@@ -35,4 +23,6 @@ npm run build
 
 You can preview the production build with `npm run preview`.
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+## Deploying
+
+Just push new version to `main`, GH Actions will take care of publishing it to GH Pages.
