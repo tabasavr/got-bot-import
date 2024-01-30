@@ -25,7 +25,7 @@
             const name = escapeName(member["name"])
             const stars = member["rarity"]
             const level = member["level"]
-            return "-got bot crew add ${name} -s${stars} -l${level}"
+            return `-got bot crew add ${name} -s${stars} -l${level}`
         })
     }
 </script>
