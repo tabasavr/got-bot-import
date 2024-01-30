@@ -21,12 +21,14 @@
     function formatCrew(_event: Event) {
         const data = JSON.parse(dataInput)
         const crew: any[] = data["player"]["character"]["crew"]
-        formattedCommands = crew.map((member) => {
-            const name = escapeName(member["name"])
-            const stars = member["rarity"]
-            const level = member["level"]
-            return `-got bot crew add ${name} -s${stars} -l${level}`
-        })
+        formattedCommands = crew
+            .filter((member) => !member["in_buy_back_state"])
+            .map((member) => {
+                const name = escapeName(member["name"])
+                const stars = member["rarity"]
+                const level = member["level"]
+                return `-got bot crew add ${name} -s${stars} -l${level}`
+            })
         dataInput = ""
     }
 
