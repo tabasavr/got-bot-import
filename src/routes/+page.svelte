@@ -35,14 +35,15 @@
 				);
 			})
 			.map((member) => {
-				const name = escapeName(member['name']);
+				const name = member['name'];
+				const escapedName = escapeName(name);
 				const stars = member['rarity'];
 				const level = member['level'];
 
 				const hasExisting = existingCrew[name] !== undefined;
 				const command = hasExisting ? 'equip' : 'crew add';
 
-				return `-got bot ${command} ${name} -s${stars} -l${level}`;
+				return `-got bot ${command} ${escapedName} -s${stars} -l${level}`;
 			});
 		dataInput = '';
 	}
