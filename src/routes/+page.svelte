@@ -1,6 +1,8 @@
 <script lang="ts">
 	let formattedCommands: string[] = [];
 	let dataInput: string = '';
+
+	let existingDataInput: string = '';
 	let existingCrew: any[] = [];
 
 	// escape `'` in the name because bot doesn't support them
@@ -38,21 +40,22 @@
 	}
 
 	async function loadCrew() {
-		const dataResponse = await fetch('http://got.glorat.net/user/396618115972333572');
-		const data = await dataResponse.json();
+		const data = JSON.parse(existingDataInput);
 		existingCrew = data['crew'];
+		existingDataInput = '';
 	}
 </script>
 
-<svelte:head>
-	<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
-</svelte:head>
-
 <h1>GoT bot crew import formatter</h1>
 
-<input type="button" on:click={loadCrew} value="Load from bot" />
-<input type="text" bind:value={dataInput} />
-<input type="button" on:click={formatCrew} value="Format" />
+<div>
+	<input type="text" bind:value={existingDataInput} />
+	<input type="button" on:click={loadCrew} value="Load from bot" />
+</div>
+<div>
+	<input type="text" bind:value={dataInput} />
+	<input type="button" on:click={formatCrew} value="Format" />
+</div>
 
 <p>Existing crew: {existingCrew.length}</p>
 
