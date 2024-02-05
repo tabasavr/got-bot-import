@@ -31,7 +31,7 @@
 				return (
 					existing === undefined ||
 					existing['level'] !== member['level'] ||
-					existing['rarity'] !== member['rarity']
+					existing['stars'] !== member['rarity']
 				);
 			})
 			.map((member) => {
