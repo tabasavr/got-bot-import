@@ -73,7 +73,7 @@
 	<input type="button" on:click={formatCrew} value="Format" />
 </div>
 
-<p>Existing crew: {existingCrew.length}</p>
+<p>Existing crew: {Object.keys(existingCrew).length}</p>
 
 {#each formattedCommands as command (command)}
 	<p><button on:click={() => copyToClipboard(command)}>Copy</button> {command}</p>
