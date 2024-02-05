@@ -1,6 +1,7 @@
 <script lang="ts">
 	let formattedCommands: string[] = [];
 	let dataInput: string = '';
+	let existingCrew: any[] = [];
 
 	// escape `'` in the name because bot doesn't support them
 	function escapeName(name: string): string {
@@ -35,12 +36,21 @@
 	function copyToClipboard(text: string) {
 		navigator.clipboard.writeText(text);
 	}
+
+	async function loadCrew() {
+		const dataResponse = await fetch('http://got.glorat.net/user/396618115972333572');
+		const data = await dataResponse.json();
+		existingCrew = data['crew'];
+	}
 </script>
 
 <h1>GoT bot crew import formatter</h1>
 
+<input type="button" on:click={loadCrew} value="Load from bot" />
 <input type="text" bind:value={dataInput} />
 <input type="button" on:click={formatCrew} value="Format" />
+
+<p>Existing crew: {existingCrew.length}</p>
 
 {#each formattedCommands as command (command)}
 	<p><button on:click={() => copyToClipboard(command)}>Copy</button> {command}</p>
