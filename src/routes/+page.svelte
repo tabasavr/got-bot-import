@@ -44,6 +44,10 @@
 	}
 </script>
 
+<svelte:head>
+	<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+</svelte:head>
+
 <h1>GoT bot crew import formatter</h1>
 
 <input type="button" on:click={loadCrew} value="Load from bot" />
