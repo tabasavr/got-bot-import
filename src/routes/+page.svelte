@@ -3,7 +3,7 @@
 	let dataInput: string = '';
 
 	let existingDataInput: string = '';
-	let existingCrew: any[] = [];
+	let existingCrew: Record<string, any> = [];
 
 	// escape `'` in the name because bot doesn't support them
 	function escapeName(name: string): string {
@@ -26,11 +26,23 @@
 		const crew: any[] = data['player']['character']['crew'];
 		formattedCommands = crew
 			.filter((member) => !member['in_buy_back_state'])
+			.filter((member) => {
+				const existing = existingCrew[member['name']];
+				return (
+					existing === undefined ||
+					existing['level'] !== member['level'] ||
+					existing['rarity'] !== member['rarity']
+				);
+			})
 			.map((member) => {
 				const name = escapeName(member['name']);
 				const stars = member['rarity'];
 				const level = member['level'];
-				return `-got bot crew add ${name} -s${stars} -l${level}`;
+
+				const hasExisting = existingCrew[name] !== undefined;
+				const command = hasExisting ? 'equip' : 'crew add';
+
+				return `-got bot ${command} ${name} -s${stars} -l${level}`;
 			});
 		dataInput = '';
 	}
@@ -41,7 +53,10 @@
 
 	async function loadCrew() {
 		const data = JSON.parse(existingDataInput);
-		existingCrew = data['crew'];
+		existingCrew = data['crew'].reduce((acc: Record<string, any>, member: any) => {
+			acc[member['name']] = member;
+			return acc;
+		}, {});
 		existingDataInput = '';
 	}
 </script>
