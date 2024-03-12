@@ -7,18 +7,7 @@
 
 	// escape `'` in the name because bot doesn't support them
 	function escapeName(name: string): string {
-		function escapeSegment(s: string): string {
-			if (s.startsWith("'") && s.endsWith("'")) {
-				return escapeSegment(s.substring(1, s.length - 1));
-			}
-			const index = s.indexOf("'");
-			if (index == -1) {
-				return s;
-			} else {
-				return s.substring(index + 1);
-			}
-		}
-		return name.split(' ').map(escapeSegment).join(' ');
+		return name.replaceAll("'", "\\'");
 	}
 
 	function formatCrew(_event: Event) {
