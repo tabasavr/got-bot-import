@@ -1,4 +1,6 @@
 <script lang="ts">
+	export let data;
+
 	let formattedCommands: string[] = [];
 	let dataInput: string = '';
 
@@ -11,16 +13,32 @@
 	}
 
 	function formatCrew(_event: Event) {
-		const data = JSON.parse(dataInput);
-		const crew: any[] = data['player']['character']['crew'];
-		formattedCommands = crew
+		const apiData = JSON.parse(dataInput);
+
+		// add frozen crew
+		const stored_immortals: any[] = apiData['player']['character']['stored_immortals'];
+		const frozen_crew = stored_immortals.map(member => {
+			const id = member["id"].toString();
+			const archetype = data['archetypes'][id];
+			return {
+				'name': archetype['name'],
+				'level': 100,
+				'rarity': archetype['max_rarity'],
+				'vaulted': true,
+			}
+		});
+
+		// format everything
+		const crew: any[] = apiData['player']['character']['crew'];
+		formattedCommands = crew.concat(frozen_crew)
 			.filter((member) => !member['in_buy_back_state'])
 			.filter((member) => {
 				const existing = existingCrew[member['name']];
 				return (
 					existing === undefined ||
 					existing['level'] !== member['level'] ||
-					existing['stars'] !== member['rarity']
+					existing['stars'] !== member['rarity'] ||
+					existing['vaulted'] !== member['vaulted']
 				);
 			})
 			.map((member) => {
@@ -28,11 +46,20 @@
 				const escapedName = escapeName(name);
 				const stars = member['rarity'];
 				const level = member['level'];
+				const vaulted = member['vaulted'] === true;
 
-				const hasExisting = existingCrew[name] !== undefined;
-				const command = hasExisting ? 'equip' : 'crew add';
+				const existing = existingCrew[name];
+				const hasExisting = existing !== undefined;
 
-				return `-got bot ${command} ${escapedName} -s${stars} -l${level}`;
+				if (!hasExisting) {
+					return `-got bot crew add ${escapedName} -s${stars} -l${level}`;
+				} else if (vaulted) {
+					return `-got bot crew vault ${escapedName}`
+				} else if (existing['vaulted'] === true) {
+					return `-got bot crew unvault ${escapedName}`
+				} else {
+					return `-got bot equip ${escapedName} -s${stars} -l${level}`
+				}
 			});
 		dataInput = '';
 	}
