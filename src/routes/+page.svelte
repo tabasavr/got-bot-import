@@ -1,11 +1,42 @@
 <script lang="ts">
 	export let data;
 
+	/**
+	 * Crew in active part of user input (player data json)
+	 */ 
+	type InputCrew = {
+		name: string;
+		level: number;
+		in_buy_back_state: boolean;
+		rarity: number;
+		max_rarity: number;
+		vaulted?: boolean; // not part of player data, but simplifies things 
+	};
+
+	/**
+	 * Crew in immortalized part of user input (player data json)
+	 */
+	type ImmortalCrew = {
+		id: number;
+		quantity: number;
+	}
+
+	/**
+	 * Crew in bot input
+	 */
+	type BotCrew = {
+		name: string;
+		level: number;
+		stars: number; // rarity in InputCrew
+		maxstart: number; // max_rarity in InputCrew
+		vaulted?: boolean;
+	};
+
 	let formattedCommands: string[] = [];
 	let dataInput: string = '';
 
 	let existingDataInput: string = '';
-	let existingCrew: Record<string, any> = [];
+	let existingCrew: {[name: string]: BotCrew} = {};
 
 	// escape `'` in the name because bot doesn't support them
 	function escapeName(name: string): string {
@@ -16,7 +47,7 @@
 		const apiData = JSON.parse(dataInput);
 
 		// add frozen crew
-		const stored_immortals: any[] = apiData['player']['character']['stored_immortals'];
+		const stored_immortals: ImmortalCrew[] = apiData['player']['character']['stored_immortals'];
 		const frozen_crew = stored_immortals.map(member => {
 			const id = member["id"].toString();
 			const archetype = data['archetypes'][id];
@@ -24,12 +55,14 @@
 				'name': archetype['name'],
 				'level': 100,
 				'rarity': archetype['max_rarity'],
+				'max_rarity': archetype['max_rarity'],
 				'vaulted': true,
+				'in_buy_back_state': false,
 			}
 		});
 
 		// format everything
-		const crew: any[] = apiData['player']['character']['crew'];
+		const crew: InputCrew[] = apiData['player']['character']['crew'];
 		formattedCommands = crew.concat(frozen_crew)
 			.filter((member) => !member['in_buy_back_state'])
 			.filter((member) => {
