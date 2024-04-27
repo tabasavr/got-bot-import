@@ -35,6 +35,7 @@
 	let formattedCommands: string[] = [];
 	let dataInput: string = '';
 
+	let botUserId: string = '';
 	let existingDataInput: string = '';
 	let existingCrew: {[name: string]: BotCrew} = {};
 
@@ -114,10 +115,17 @@
 <h1>GoT bot crew import formatter</h1>
 
 <div>
+	<h2>Optional: import existing crew from bot</h2>
+	<p>Find yourself in the <a href="http://got.glorat.net/users" target="_blank" rel="noopener noreferrer">list of players</a> and copy your id into this field:</p>
+	<input type="text" bind:value={botUserId} /> 
+
+	<p><a href="http://got.glorat.net/user/{botUserId}" target="_blank" rel="noopener noreferrer">Open player data</a> and copy-paste everything into this field and click "Load from bot":</p>
 	<input type="text" bind:value={existingDataInput} />
 	<input type="button" on:click={loadCrew} value="Load from bot" />
 </div>
 <div>
+	<h2>Import player data</h2>
+	<p><a href="https://app.startrektimelines.com/player?client_api=20&only_read_state=true" target="_blank" rel="noopener noreferrer">Open player data</a> and copy-paste everything into this field and click "Format":</p>
 	<input type="text" bind:value={dataInput} />
 	<input type="button" on:click={formatCrew} value="Format" />
 </div>
