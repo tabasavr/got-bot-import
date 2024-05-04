@@ -65,6 +65,7 @@
 		// format everything
 		const crew: InputCrew[] = apiData['player']['character']['crew'];
 		formattedCommands = crew.concat(frozen_crew)
+			.toSorted((lhs, rhs) => lhs.name.localeCompare(rhs.name))
 			.filter((member) => !member['in_buy_back_state'])
 			.filter((member) => {
 				const existing = existingCrew[member['name']];
