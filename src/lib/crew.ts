@@ -36,3 +36,21 @@ export type StaticCrew = {
     name: string;
     max_rarity: number;
 }
+
+export function deduplicate(crew: InputCrew[]): InputCrew[] {
+    const groupped = Object.groupBy(crew, (member) => member.name);
+    return Object.entries(groupped).map((entry) => {
+        const [_, members] = entry;
+
+        return members!.toSorted((lhs, rhs) => {
+            if (lhs.vaulted != rhs.vaulted) {
+                return lhs.vaulted ? 1 : -1;
+            }
+            if (lhs.level != rhs.level) {
+                return lhs.level - rhs.level;
+            }
+            return lhs.rarity - rhs.rarity;
+        })
+            .at(-1)!; // get last
+    })
+}

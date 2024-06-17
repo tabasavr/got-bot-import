@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { BotCrew, ImmortalCrew, InputCrew } from '$lib/crew.js';
+	import { deduplicate } from '$lib/crew.js';
 
 	export let data;
 
@@ -35,7 +36,10 @@
 
 		// format everything
 		const crew: InputCrew[] = apiData['player']['character']['crew'];
-		formattedCommands = crew.concat(frozen_crew)
+
+		const deduplicated = deduplicate(crew.concat(frozen_crew));
+
+		formattedCommands = deduplicated
 			.toSorted((lhs, rhs) => lhs.name.localeCompare(rhs.name))
 			.filter((member) => !member['in_buy_back_state'])
 			.filter((member) => {
