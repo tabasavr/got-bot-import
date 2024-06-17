@@ -1,36 +1,7 @@
 <script lang="ts">
+	import type { BotCrew, ImmortalCrew, InputCrew } from '$lib/crew.js';
+
 	export let data;
-
-	/**
-	 * Crew in active part of user input (player data json)
-	 */ 
-	type InputCrew = {
-		name: string;
-		level: number;
-		in_buy_back_state: boolean;
-		rarity: number;
-		max_rarity: number;
-		vaulted?: boolean; // not part of player data, but simplifies things 
-	};
-
-	/**
-	 * Crew in immortalized part of user input (player data json)
-	 */
-	type ImmortalCrew = {
-		id: number;
-		quantity: number;
-	}
-
-	/**
-	 * Crew in bot input
-	 */
-	type BotCrew = {
-		name: string;
-		level: number;
-		stars: number; // rarity in InputCrew
-		maxstart: number; // max_rarity in InputCrew
-		vaulted?: boolean;
-	};
 
 	let formattedCommands: string[] = [];
 	let dataInput: string = '';

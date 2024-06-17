@@ -1,14 +1,7 @@
 import { base } from '$app/paths';
+import type { StaticCrew } from '$lib/crew'
 
 export const ssr = false; //todo: can this be set to true?
-
-/**
- * Crew in static game data (crew.json)
- */
-type StaticCrew = {
-    name: string;
-    max_rarity: number;
-}
 
 export async function load({ params }) {
 	let archetypes = await fetch(base + '/crew.json'); 
