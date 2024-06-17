@@ -26,8 +26,9 @@ function makeVaultedCrew(name: string): InputCrew {
 describe("deduplicate", () => {
     it("selects vaulted", () => {
         const crew = [
-            makeCrew("a", 100, 5),
+            makeCrew("a", 1, 5),
             makeVaultedCrew("a"),
+            makeCrew("a", 100, 5),
         ]
 
         const expected = [
@@ -36,4 +37,46 @@ describe("deduplicate", () => {
 
         expect(deduplicate(crew)).toStrictEqual(expected)
     });
+
+    it ("selects higher level", () => {
+        const crew = [
+            makeCrew("a", 1, 5),
+            makeCrew("a", 100, 1),
+            makeCrew("a", 10, 5),
+        ]
+
+        const expected = [
+            makeCrew("a", 100, 1),
+        ]
+
+        expect(deduplicate(crew)).toStrictEqual(expected)
+    })
+
+    it ("selects higher stars", () => {
+        const crew = [
+            makeCrew("a", 1, 1),
+            makeCrew("a", 1, 5),
+            makeCrew("a", 1, 4),
+        ]
+
+        const expected = [
+            makeCrew("a", 1, 5),
+        ]
+
+        expect(deduplicate(crew)).toStrictEqual(expected)
+    })
+
+    it ("keeps different crew", () => {
+        const crew = [
+            makeCrew("a", 1, 1),
+            makeCrew("b", 1, 1),
+        ]
+
+        const expected = [
+            makeCrew("a", 1, 1),
+            makeCrew("b", 1, 1)
+        ]
+
+        expect(deduplicate(crew)).toStrictEqual(expected)
+    })
 });
