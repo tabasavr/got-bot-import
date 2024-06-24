@@ -53,6 +53,9 @@ export function deduplicate(crew: InputCrew[]): DuplicateResolutionResult[] {
 
 function resolveDuplicates(candidates: InputCrew[]): DuplicateResolutionResult {
     const result = candidates.toSorted((lhs, rhs) => {
+        if (lhs.in_buy_back_state != rhs.in_buy_back_state) {
+            lhs.in_buy_back_state ? -1 : 1; // don't select crew in buyback
+        }
         if (lhs.vaulted != rhs.vaulted) {
             return lhs.vaulted ? 1 : -1;
         }

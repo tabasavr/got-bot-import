@@ -126,10 +126,10 @@
 {#each nontrivialDuplicateResolutions as resolution (resolution)}
 	<h3>Candidates:</h3>
 	{#each resolution.candidates as candidate (candidate)}
-		<p>{candidate.name} {candidate.rarity}/{candidate.max_rarity} lvl: {candidate.level} frozen: {candidate.vaulted || false}</p>
+		<p>{candidate.name} {candidate.rarity}/{candidate.max_rarity} lvl: {candidate.level} frozen: {candidate.vaulted || false} in buyback: {candidate.in_buy_back_state}</p>
 	{/each}
 	<h3>Selected</h3>
-	{resolution.result.name} {resolution.result.rarity}/{resolution.result.max_rarity} lvl: {resolution.result.level} frozen: {resolution.result.vaulted || false}
+	{resolution.result.name} {resolution.result.rarity}/{resolution.result.max_rarity} lvl: {resolution.result.level} frozen: {resolution.result.vaulted || false} in buyback: {resolution.result.in_buy_back_state}
 {/each}
 {#if nontrivialDuplicateResolutions.length == 0}
 	<p>No duplicates</p>
