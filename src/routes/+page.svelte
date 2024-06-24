@@ -108,6 +108,11 @@
 
 <p>Existing crew: {Object.keys(existingCrew).length}</p>
 
+<h2>Bot commands:</h2>
 {#each formattedCommands as command (command)}
 	<p><button on:click={() => copyToClipboard(command)}>Copy</button> {command}</p>
 {/each}
+{#if formattedCommands.length == 0}
+	<p>Everything is up to date!</p>
+	<p>Note: bot currently does not print commands to delete crew that was dismissed after being added to the bot</p>
+{/if}
