@@ -1,10 +1,11 @@
 <script lang="ts">
-	import type { BotCrew, ImmortalCrew, InputCrew } from '$lib/crew.js';
+	import type { BotCrew, DuplicateResolutionResult, ImmortalCrew, InputCrew } from '$lib/crew.js';
 	import { deduplicate } from '$lib/crew.js';
 
 	export let data;
 
 	let formattedCommands: string[] = [];
+	let nontrivialDuplicateResolutions: DuplicateResolutionResult[] = []
 	let dataInput: string = '';
 
 	let botUserId: string = '';
@@ -37,8 +38,9 @@
 		// format everything
 		const crew: InputCrew[] = apiData['player']['character']['crew'];
 
-		const deduplicated = deduplicate(crew.concat(frozen_crew));
-
+		const duplicateResolutionResults = deduplicate(crew.concat(frozen_crew));
+		
+		const deduplicated = duplicateResolutionResults.map(result => result.result);
 		formattedCommands = deduplicated
 			.toSorted((lhs, rhs) => lhs.name.localeCompare(rhs.name))
 			.filter((member) => !member['in_buy_back_state'])
@@ -71,6 +73,9 @@
 					return `-got bot equip ${escapedName} -s${stars} -l${level}`
 				}
 			});
+
+		nontrivialDuplicateResolutions = duplicateResolutionResults.filter(result => result.candidates.length > 1)
+
 		dataInput = '';
 	}
 
@@ -115,4 +120,17 @@
 {#if formattedCommands.length == 0}
 	<p>Everything is up to date!</p>
 	<p>Note: bot currently does not print commands to delete crew that was dismissed after being added to the bot</p>
+{/if}
+
+<h2>Duplicate resolution results:</h2>
+{#each nontrivialDuplicateResolutions as resolution (resolution)}
+	<h3>Candidates:</h3>
+	{#each resolution.candidates as candidate (candidate)}
+		<p>{candidate.name} {candidate.rarity}/{candidate.max_rarity} lvl: {candidate.level} frozen: {candidate.vaulted || false}</p>
+	{/each}
+	<h3>Selected</h3>
+	{resolution.result.name} {resolution.result.rarity}/{resolution.result.max_rarity} lvl: {resolution.result.level} frozen: {resolution.result.vaulted || false}
+{/each}
+{#if nontrivialDuplicateResolutions.length == 0}
+	<p>No duplicates</p>
 {/if}

@@ -37,20 +37,34 @@ export type StaticCrew = {
     max_rarity: number;
 }
 
-export function deduplicate(crew: InputCrew[]): InputCrew[] {
+export type DuplicateResolutionResult = {
+    candidates: InputCrew[];
+    result: InputCrew;
+}
+
+export function deduplicate(crew: InputCrew[]): DuplicateResolutionResult[] {
     const groupped = Object.groupBy(crew, (member) => member.name);
     return Object.entries(groupped).map((entry) => {
         const [_, members] = entry;
 
-        return members!.toSorted((lhs, rhs) => {
-            if (lhs.vaulted != rhs.vaulted) {
-                return lhs.vaulted ? 1 : -1;
-            }
-            if (lhs.level != rhs.level) {
-                return lhs.level - rhs.level;
-            }
-            return lhs.rarity - rhs.rarity;
-        })
-            .at(-1)!; // get last
+        return resolveDuplicates(members!); // get last
     })
+}
+
+function resolveDuplicates(candidates: InputCrew[]): DuplicateResolutionResult {
+    const result = candidates.toSorted((lhs, rhs) => {
+        if (lhs.vaulted != rhs.vaulted) {
+            return lhs.vaulted ? 1 : -1;
+        }
+        if (lhs.level != rhs.level) {
+            return lhs.level - rhs.level;
+        }
+        return lhs.rarity - rhs.rarity;
+    })
+        .at(-1)!; // get last
+
+    return {
+        candidates: candidates,
+        result: result,
+    }
 }
