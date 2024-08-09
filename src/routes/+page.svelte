@@ -93,57 +93,73 @@
 	}
 </script>
 
-<h1>GoT bot crew import formatter</h1>
+<main>
+	<h1>GoT bot crew import formatter</h1>
 
-<div>
-	<h2>Optional: import existing crew from bot</h2>
-	<p>Find yourself in the <a href="http://got.glorat.net/users" target="_blank" rel="noopener noreferrer">list of players</a> and copy your id into this field:</p>
-	<input type="text" bind:value={botUserId} /> 
+	<div>
+		<h2>Optional: import existing crew from bot</h2>
+		<p>Find yourself in the <a href="http://got.glorat.net/users" target="_blank" rel="noopener noreferrer">list of players</a> and copy your id into this field:</p>
+		<input type="text" bind:value={botUserId} /> 
 
-	<p><a href="http://got.glorat.net/user/{botUserId}" target="_blank" rel="noopener noreferrer">Open player data</a> and copy-paste everything into this field and click "Load from bot":</p>
-	<input type="text" bind:value={existingDataInput} />
-	<input type="button" on:click={loadCrew} value="Load from bot" />
-</div>
-<div>
-	<h2>Import player data</h2>
-	<p><a href="https://app.startrektimelines.com/player?client_api=20&only_read_state=true" target="_blank" rel="noopener noreferrer">Open player data</a> and copy-paste everything into this field and click "Format":</p>
-	<input type="text" bind:value={dataInput} />
-	<input type="button" on:click={formatCrew} value="Format" />
-</div>
+		<p><a href="http://got.glorat.net/user/{botUserId}" target="_blank" rel="noopener noreferrer">Open player data</a> and copy-paste everything into this field and click "Load from bot":</p>
+		<input type="text" bind:value={existingDataInput} />
+		<input type="button" on:click={loadCrew} value="Load from bot" />
+	</div>
+	<div>
+		<h2>Import player data</h2>
+		<p><a href="https://app.startrektimelines.com/player?client_api=20&only_read_state=true" target="_blank" rel="noopener noreferrer">Open player data</a> and copy-paste everything into this field and click "Format":</p>
+		<input type="text" bind:value={dataInput} />
+		<input type="button" on:click={formatCrew} value="Format" />
+	</div>
 
-<p>Existing crew: {Object.keys(existingCrew).length}</p>
+	<p>Existing crew: {Object.keys(existingCrew).length}</p>
 
-<h2>Bot commands:</h2>
-{#each formattedCommands as command (command)}
-	<p><button on:click={() => copyToClipboard(command)}>Copy</button> {command}</p>
-{/each}
-{#if formattedCommands.length == 0}
-	<p>Everything is up to date!</p>
-	<p>Note: bot currently does not print commands to delete crew that was dismissed after being added to the bot</p>
-{/if}
+	<h2>Bot commands:</h2>
+	{#each formattedCommands as command (command)}
+		<p><button on:click={() => copyToClipboard(command)}>Copy</button> {command}</p>
+	{/each}
+	{#if formattedCommands.length == 0}
+		<p>Everything is up to date!</p>
+		<p>Note: bot currently does not print commands to delete crew that was dismissed after being added to the bot</p>
+	{/if}
 
-<h2>Duplicate resolution results:</h2>
-{#each nontrivialDuplicateResolutions as resolution (resolution)}
-	<h3>Candidates:</h3>
-	{#each resolution.candidates as candidate (candidate)}
-		<p>{candidate.name} {candidate.rarity}/{candidate.max_rarity} lvl: {candidate.level}
-		{#if candidate.vaulted || false}
+	<h2>Duplicate resolution results:</h2>
+	{#each nontrivialDuplicateResolutions as resolution (resolution)}
+		<h3>Candidates:</h3>
+		{#each resolution.candidates as candidate (candidate)}
+			<p>{candidate.name} {candidate.rarity}/{candidate.max_rarity} lvl: {candidate.level}
+			{#if candidate.vaulted || false}
+				frozen
+			{/if}
+			{#if candidate.in_buy_back_state}
+				in buyback
+			{/if}
+			</p>
+		{/each}
+		<h3>Selected</h3>
+		{resolution.result.name} {resolution.result.rarity}/{resolution.result.max_rarity} lvl: {resolution.result.level}
+		{#if resolution.result.vaulted || false}
 			frozen
 		{/if}
-		{#if candidate.in_buy_back_state}
+		{#if resolution.result.in_buy_back_state}
 			in buyback
 		{/if}
-		</p>
 	{/each}
-	<h3>Selected</h3>
-	{resolution.result.name} {resolution.result.rarity}/{resolution.result.max_rarity} lvl: {resolution.result.level}
-	{#if resolution.result.vaulted || false}
-		frozen
+	{#if nontrivialDuplicateResolutions.length == 0}
+		<p>No duplicates</p>
 	{/if}
-	{#if resolution.result.in_buy_back_state}
-		in buyback
-	{/if}
-{/each}
-{#if nontrivialDuplicateResolutions.length == 0}
-	<p>No duplicates</p>
-{/if}
+</main>
+
+<style>
+	main {
+		margin: 40px auto;
+		max-width: 650px;
+		line-height: 1.6;
+		font-size: 18px;
+		color: #454545;
+		padding: 0 10px;
+	}
+	h1, h2, h3{
+		line-height: 1.2;
+	}
+</style>
