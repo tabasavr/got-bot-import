@@ -6,19 +6,25 @@
 
 	let formattedCommands: string[] = [];
 	let nontrivialDuplicateResolutions: DuplicateResolutionResult[] = []
-	let dataInput: string = '';
+	
+	let apiDataInput: string = '';
+	let apiDataJson: any = null;
 
 	let botUserId: string = '';
-	let existingDataInput: string = '';
-	let existingCrew: {[name: string]: BotCrew} = {};
+	let botDataInput: string = '';
+	let botDataCrew: {[name: string]: BotCrew} = {};
 
 	// escape `'` in the name because bot doesn't support them
 	function escapeName(name: string): string {
 		return name.replaceAll("'", "\\'");
 	}
 
-	function formatCrew(_event: Event) {
-		const apiData = JSON.parse(dataInput);
+	function formatCrew() {
+		if (apiDataJson === null) {
+			return;
+		}
+
+		const apiData = apiDataJson;
 
 		// add frozen crew
 		const stored_immortals: ImmortalCrew[] = apiData['player']['character']['stored_immortals'];
@@ -45,7 +51,7 @@
 			.toSorted((lhs, rhs) => lhs.name.localeCompare(rhs.name))
 			.filter((member) => !member['in_buy_back_state'])
 			.filter((member) => {
-				const existing = existingCrew[member['name']];
+				const existing = botDataCrew[member['name']];
 				return (
 					existing === undefined ||
 					existing['level'] !== member['level'] ||
@@ -60,7 +66,7 @@
 				const level = member['level'];
 				const vaulted = member['vaulted'] === true;
 
-				const existing = existingCrew[name];
+				const existing = botDataCrew[name];
 				const hasExisting = existing !== undefined;
 
 				if (!hasExisting) {
@@ -75,21 +81,29 @@
 			});
 
 		nontrivialDuplicateResolutions = duplicateResolutionResults.filter(result => result.candidates.length > 1)
-
-		dataInput = '';
 	}
 
 	function copyToClipboard(text: string) {
 		navigator.clipboard.writeText(text);
 	}
 
-	async function loadCrew() {
-		const data = JSON.parse(existingDataInput);
-		existingCrew = data['crew'].reduce((acc: Record<string, any>, member: any) => {
+	async function loadApiCrew() {
+		apiDataJson = JSON.parse(apiDataInput);
+
+		// update commands UI
+		formatCrew();
+	}
+
+	async function loadBotCrew() {
+		const data = JSON.parse(botDataInput);
+		botDataCrew = data['crew'].reduce((acc: Record<string, any>, member: any) => {
 			acc[member['name']] = member;
 			return acc;
 		}, {});
-		existingDataInput = '';
+		botDataInput = '';
+
+		// update commands UI
+		formatCrew();
 	}
 </script>
 
@@ -102,17 +116,17 @@
 		<input type="text" bind:value={botUserId} /> 
 
 		<p><a href="http://got.glorat.net/user/{botUserId}" target="_blank" rel="noopener noreferrer">Open player data</a> and copy-paste everything into this field and click "Load from bot":</p>
-		<input type="text" bind:value={existingDataInput} />
-		<input type="button" on:click={loadCrew} value="Load from bot" />
+		<input type="text" bind:value={botDataInput} />
+		<input type="button" on:click={loadBotCrew} value="Load from bot" />
 	</div>
 	<div>
 		<h2>Import player data</h2>
 		<p><a href="https://app.startrektimelines.com/player?client_api=20&only_read_state=true" target="_blank" rel="noopener noreferrer">Open player data</a> and copy-paste everything into this field and click "Format":</p>
-		<input type="text" bind:value={dataInput} />
-		<input type="button" on:click={formatCrew} value="Format" />
+		<input type="text" bind:value={apiDataInput} />
+		<input type="button" on:click={loadApiCrew} value="Format" />
 	</div>
 
-	<p>Existing crew: {Object.keys(existingCrew).length}</p>
+	<p>Existing crew: {Object.keys(botDataCrew).length}</p>
 
 	<h2>Bot commands:</h2>
 	{#each formattedCommands as command (command)}
