@@ -14,6 +14,8 @@
 	let botDataInput: string = '';
 	let botDataCrew: {[name: string]: BotCrew} = {};
 
+	let minRarity: string = '0';
+
 	// escape `'` in the name because bot doesn't support them
 	function escapeName(name: string): string {
 		return name.replaceAll("'", "\\'");
@@ -25,6 +27,8 @@
 		}
 
 		const apiData = apiDataJson;
+		const minRarityN = parseInt(minRarity);
+		console.log(`Formatting crew with minRarity=${minRarityN}`);
 
 		// add frozen crew
 		const stored_immortals: ImmortalCrew[] = apiData['player']['character']['stored_immortals'];
@@ -50,6 +54,7 @@
 		formattedCommands = deduplicated
 			.toSorted((lhs, rhs) => lhs.name.localeCompare(rhs.name))
 			.filter((member) => !member['in_buy_back_state'])
+			.filter((member) => member['max_rarity'] >= minRarityN)
 			.filter((member) => {
 				const existing = botDataCrew[member['name']];
 				return (
@@ -128,6 +133,18 @@
 	</div>
 
 	<p>Existing crew: {Object.keys(botDataCrew).length}</p>
+
+	<form>
+		<label for="min_rarity">Minimum rarity (color):</label>
+		<select id="min_rarity" bind:value={minRarity} on:change={() => formatCrew()}>
+			<option value=0>any (any color)</option>
+			<option value=1>1 star (grey)</option>
+			<option value=2>2 star (green)</option>
+			<option value=3>3 star (blue)</option>
+			<option value=4>4 star (purple)</option>
+			<option value=5>5 star (gold)</option>
+		</select>
+	</form>
 
 	<h2>Bot commands:</h2>
 	{#each formattedCommands as command (command)}
