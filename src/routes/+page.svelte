@@ -89,6 +89,7 @@
 
 	async function loadApiCrew() {
 		apiDataJson = JSON.parse(apiDataInput);
+		apiDataInput = '';
 
 		// update commands UI
 		formatCrew();
